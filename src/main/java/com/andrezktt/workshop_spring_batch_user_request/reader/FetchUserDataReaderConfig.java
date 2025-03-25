@@ -28,11 +28,9 @@ public class FetchUserDataReaderConfig implements ItemReader<UserDTO> {
     private Logger logger = LoggerFactory.getLogger(FetchUserDataReaderConfig.class);
 
     private final String BASE_URL = "http://localhost:8081";
-
     private RestTemplate restTemplate = new RestTemplate();
 
     private int page = 0;
-
     private List<UserDTO> users = new ArrayList<>();
     private int userIndex = 0;
 
@@ -45,7 +43,10 @@ public class FetchUserDataReaderConfig implements ItemReader<UserDTO> {
     @Override
     public UserDTO read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         UserDTO user;
-        user = userIndex < users.size() ? users.get(userIndex) : null;
+        if (userIndex < users.size())
+            user = users.get(userIndex);
+        else
+            user = null;
         userIndex++;
         return user;
     }
@@ -62,7 +63,7 @@ public class FetchUserDataReaderConfig implements ItemReader<UserDTO> {
                 null,
                 new ParameterizedTypeReference<ResponseUser>() {
         });
-        return Objects.requireNonNull(response.getBody()).getContent();
+        return response.getBody().getContent();
     }
 
     public int getPage() {
